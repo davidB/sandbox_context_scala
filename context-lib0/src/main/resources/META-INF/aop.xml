@@ -1,0 +1,19 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+
+<aspectj>
+    <aspects>
+        <!--aspect name="context.propagation.threadlocal.CurrentCtxInstrumentation"/-->
+        <aspect name="context.propagation.threadlocal.ExecutionContextInstrumentation"/>
+        <aspect name="context.propagation.threadlocal.ActorEnvelopeInstrumentation"/>
+    </aspects>
+
+    <!--weaver options="-verbose -showWeaveInfo"-->
+    <weaver options="">
+        <!--include within="context.CurrentCtx"/-->
+        <!--include within="akka.dispatch.*"/-->
+        <!--
+            <include within="play.Logger..*"/>
+            <include within="play.api..*"/>
+        -->
+    </weaver>
+</aspectj>
