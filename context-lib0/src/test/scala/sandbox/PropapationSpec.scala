@@ -167,7 +167,7 @@ class FakeActor(ctxTools: CtxTools, pcol: PropagationCollector) extends Actor {
             pcol.report(m.ctx)
             if (m.cnt > 0) {
                 if (m.cnt % 2 == 0) {
-                    ctxTools.withCtx(ctxTools.newCtx("newMessage")) {implicit ctx =>
+                    ctxTools.withCtx(ctxTools.newCtx("newMessage" + m.cnt)) {implicit ctx =>
                         self ! MyMessage(m.txt + "x", m.cnt - 1)
                     }
                 } else {
