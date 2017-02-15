@@ -20,6 +20,7 @@ The project is an experimental place for context management and propagation.
 == How to enable implicit propagation ?
 
 It should be done explicitly, :-P by:
+
 1. Create a link:./context-lib0/src/test/resources/META-INF/aop.xml["META-INF/aop.xml"] file (available at runtime) where you enable/disable instrumentation (aspects) as you like.
 2. Add setup of static accessor (used by Aspects) to the initialization of your app
 3. Enable aspectj weaving (TODO)
@@ -29,6 +30,7 @@ It should be done explicitly, :-P by:
 
 http://kamon.io[Kamon] is a great piece of code, and far more mature than this project.
 It is an inspiration, and the lib used one of its sbt plugins. But it doesn't match our requirements:
+
 * Kamon is a "all-in-one",
 	* tracing AND metrics, so it's duplication when you already have metrics and only want tracing
 * In the current version (0.6.6), doesn't support OpenTracing. And I don't see how to cleanly integrate
