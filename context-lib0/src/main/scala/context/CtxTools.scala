@@ -1,11 +1,13 @@
 package context
 
+import javax.inject.Inject
+
 import scala.concurrent.Future
 
 /**
   * Created by davidb on 14/02/17.
   */
-class CtxTools(val current: CurrentCtx, val factory: CtxFactory) {
+class CtxTools @Inject()(val current: CurrentCtx, val factory: CtxFactory) {
 
     def newCtx(name: String)(implicit parent: Option[Ctx] = None): Ctx = factory.newCtx(name)
     def startCtx(ctx: Ctx): Ctx = factory.startCtx(ctx)

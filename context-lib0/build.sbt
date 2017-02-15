@@ -18,7 +18,8 @@ lazy val root = Project("context-lib0", file("."))
   .settings(
     libraryDependencies ++=
       compileScope(
-        "io.opentracing" % "opentracing-api" % opentracingVersion
+          "javax.inject" % "javax.inject" % "1",
+          "io.opentracing" % "opentracing-api" % opentracingVersion
       ) ++
       providedScope(
           aspectJ,

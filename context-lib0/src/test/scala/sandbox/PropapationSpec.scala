@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import akka.actor.{Actor, ActorSystem, Props}
 import context.propagation.threadlocal.CurrentCtxLocalThread
 import context._
+import io.opentracing.NoopTracerFactory
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers._
 import org.slf4j.{LoggerFactory, MDC}
@@ -19,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class PropapationSpec extends FlatSpec {
     CurrentCtx.instance = CurrentCtxLocalThread.instance
     val currentCtx = CurrentCtx
-    val ctxFactory = new CtxFactory0()
+    val ctxFactory = new CtxFactorySpanOnly(NoopTracerFactory.create())
     val ctxTools = new CtxTools(currentCtx, ctxFactory)
     val pcol = new PropagationCollector(currentCtx)
 
@@ -106,23 +107,7 @@ class PropagationCollector(currentCtx: CurrentCtx) {
     }
 }
 
-case class Ctx0(id: String) extends Ctx
-class CtxFactory0 extends CtxFactory {
-    val count = new AtomicInteger(0)
-
-    def newCtx(name: String)(implicit parent: Option[Ctx] = None): Ctx = {
-        new Ctx0(parent.map(_ + "/").getOrElse("") + name + "[" + count.addAndGet(1) + "]")
-    }
-
-    def startCtx(ctx: Ctx): Ctx = {
-        ctx
-    }
-
-    def finishCtx(ctx: Ctx): Ctx = {
-        ctx
-    }
-}
-        //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // Fake Application Fragment
 
 class FakeService(ctxTools: CtxTools, pcol: PropagationCollector) {
