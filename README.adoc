@@ -1,0 +1,44 @@
+
+WARNING: The project is WIP and very experimental !
+
+= Overview
+
+The project is an experimental place for context management and propagation.
+
+== Goals & Requirements
+
+* Use OpenTracing api.
+* Do not provide a scala wrapper api for opentracing-java.
+* Provide Helpers for
+* Let developer (user of the lib) choose between explicit context propagation, implicit propagation or mixed (optionnated).
+	* implicit mode off by default, need explicit setup
+	* when implicit on, take care of context to not duplicate (eg. don't create  open tracing span with kind == "jdbc" if current span.kind == "jdbc" )
+
+
+= F.A.Q
+
+== How to enable implicit propagation ?
+
+It should be done explicitly, :-P by:
+1. Create a link:./context-lib0/src/test/resources/META-INF/aop.xml["META-INF/aop.xml"] file (available at runtime) where you enable/disable instrumentation (aspects) as you like.
+2. Add setup of static accessor (used by Aspects) to the initialization of your app
+3. Enable aspectj weaving (TODO)
+
+
+== Why not Kamon ?
+
+http://kamon.io[Kamon] is a great piece of code, and far more mature than this project.
+It is an inspiration, and the lib used one of its sbt plugins. But it doesn't match our requirements:
+* Kamon is a "all-in-one",
+	* tracing AND metrics, so it's duplication when you already have metrics and only want tracing
+* In the current version (0.6.6), doesn't support OpenTracing. And I don't see how to cleanly integrate
+	* Concept are different Kamon Trace or Segment doesn't match OpenTracing Span (scope, propagation, feature)
+	* It should be possible to create a reporter of Kamon Trace reporter, that convert into Span for OpenTracing backend, if developer (or lib) doesn't use OpenTracing API
+	* Contact me for more info
+
+== Why not SpanManager (from opentracing contrib)
+
+= Links
+
+* https://opentracing.io[OpenTracing]
+* http://kamon.io[Kamon]
