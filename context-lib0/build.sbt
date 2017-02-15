@@ -9,7 +9,7 @@ val scalatest         = "org.scalatest"             %%  "scalatest"             
 
 lazy val root = Project("context-lib0", file("."))
   .settings(Seq(
-      moduleName := "aop-play-2.4",
+      moduleName := "context-lib0",
       scalaVersion := "2.11.8",
       //crossScalaVersions := Seq("2.11.8"),
       testGrouping in Test := singleTestPerJvm((definedTests in Test).value, (javaOptions in Test).value)
@@ -18,13 +18,7 @@ lazy val root = Project("context-lib0", file("."))
   .settings(
     libraryDependencies ++=
       compileScope(
-        "io.zipkin.brave" % "brave-mysql" % braveVersion,
-        "io.zipkin.brave" % "brave-okhttp" % braveVersion,
-        "io.zipkin.brave" % "brave-p6spy" % braveVersion,
-        "io.opentracing.brave" % "brave-opentracing" % "0.18.1",
-        "io.opentracing" % "opentracing-api" % opentracingVersion,
-        "io.opentracing" % "opentracing-noop" % opentracingVersion,
-        "io.opentracing" % "opentracing-impl" % opentracingVersion
+        "io.opentracing" % "opentracing-api" % opentracingVersion
       ) ++
       providedScope(
           aspectJ,
@@ -33,7 +27,14 @@ lazy val root = Project("context-lib0", file("."))
           "com.typesafe.play" %% "play" % play24Version,
           "com.typesafe.play" %% "play-ws" % play24Version
       ) ++
-      testScope(playTest24))
+      testScope(playTest24,
+          "io.zipkin.brave" % "brave-mysql" % braveVersion,
+          "io.zipkin.brave" % "brave-okhttp" % braveVersion,
+          "io.zipkin.brave" % "brave-p6spy" % braveVersion,
+          "io.opentracing.brave" % "brave-opentracing" % "0.18.1",
+          "io.opentracing" % "opentracing-noop" % opentracingVersion,
+          "io.opentracing" % "opentracing-impl" % opentracingVersion
+      ))
 
 
  import sbt.Tests._

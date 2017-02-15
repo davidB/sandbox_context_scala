@@ -22,6 +22,7 @@ class CtxTools(val current: CurrentCtx, val factory: CtxFactory) {
             res
         }
     }
+
     def withCtx[T](ctx: Ctx)(f: Option[Ctx] => T): T = {
         val startedCtx = startCtx(ctx)
         current.withCurrentCtx(Option(startedCtx)) { implicit oStartedCtx =>
