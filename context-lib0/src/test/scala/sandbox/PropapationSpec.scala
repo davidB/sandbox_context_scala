@@ -1,17 +1,14 @@
 package sandbox
 
-import java.util.concurrent.atomic.AtomicInteger
-
 import akka.actor.{Actor, ActorSystem, Props}
 import context.propagation.threadlocal.CurrentCtxLocalThread
 import context._
 import io.opentracing.NoopTracerFactory
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers._
-import org.slf4j.{LoggerFactory, MDC}
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
