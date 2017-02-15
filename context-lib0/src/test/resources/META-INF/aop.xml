@@ -2,6 +2,7 @@
 
 <aspectj>
     <aspects>
+        <!-- Instrumentation for Cxt Propagation via Thread Local -->
         <!--aspect name="context.propagation.threadlocal.CurrentCtxInstrumentation"/-->
         <aspect name="context.propagation.threadlocal.ExecutionContextInstrumentation"/>
         <aspect name="context.propagation.threadlocal.ActorEnvelopeInstrumentation"/>
