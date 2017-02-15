@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.{Actor, ActorSystem, Props}
 import context.propagation.threadlocal.CurrentCtxLocalThread
-import context.{Ctx, CtxTools, CurrentCtx, CurrentCtxNoop}
+import context._
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers._
 import org.slf4j.{LoggerFactory, MDC}
@@ -19,11 +19,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class PropapationSpec extends FlatSpec {
     CurrentCtx.instance = CurrentCtxLocalThread.instance
     val currentCtx = CurrentCtx
+    val ctxFactory = new CtxFactory0()
+    val ctxTools = new CtxTools(currentCtx, ctxFactory)
+    val pcol = new PropagationCollector(currentCtx)
 
     "Implicit Propagation" should "work as explicit for sync (no future) chaining with sub ctx" in {
-        val ctxTools = new CtxTools(currentCtx)
-        val pcol = new PropagationCollector(currentCtx)
-
         val service = new FakeService(ctxTools, pcol)
         pcol.report(None)
         ctxTools.withCtx(ctxTools.newCtx("0")) { implicit ctx0 =>
@@ -41,10 +41,6 @@ class PropapationSpec extends FlatSpec {
     }
 
     it should "work as explicit for simple future chaining" in {
-        val currentCtx = CurrentCtx
-        val ctxTools = new CtxTools(currentCtx)
-        val pcol = new PropagationCollector(currentCtx)
-
         val service = new FakeService(ctxTools, pcol)
         pcol.report(None)
         ctxTools.withCtx(ctxTools.newCtx("0")) { implicit ctx0 =>
@@ -52,17 +48,13 @@ class PropapationSpec extends FlatSpec {
 
             val m0 = "m0"
             val chain = service.doJobAsync(m0).map(v => service.doJobInNewCtx(v)).flatMap(v => service.doJobAsyncInNewCtx(v))
-            Await.ready(chain, 5.seconds)
+            Await.ready(chain, 3.seconds)
         }
         pcol.report(None)
         pcol.checkCollected()
     }
 
     it should "work as explicit for simple actor" in {
-        val currentCtx = CurrentCtx
-        val ctxTools = new CtxTools(currentCtx)
-        val pcol = new PropagationCollector(currentCtx)
-
         val system = ActorSystem("test")
         val actor = system.actorOf(Props(new FakeActor(ctxTools, pcol)))
         pcol.report(None)
@@ -84,15 +76,15 @@ class PropapationSpec extends FlatSpec {
 //    }
 
     "PropagationCollector.checkCollected" should "pass on valid" in {
-        val ctx = Some(new Ctx("ok"))
+        val ctx = Some(ctxFactory.newCtx("ok"))
         val currentCtx = new CurrentCtxNoop {
             override def get(): Option[Ctx] = ctx
         }
-        val pcol = new PropagationCollector(currentCtx)
-        pcol.report(ctx)
-        pcol.report(ctx)
-        pcol.report(ctx)
-        pcol.checkCollected()
+        val pCol0 = new PropagationCollector(currentCtx)
+        pCol0.report(ctx)
+        pCol0.report(ctx)
+        pCol0.report(ctx)
+        pCol0.checkCollected()
     }
 }
 
@@ -114,7 +106,23 @@ class PropagationCollector(currentCtx: CurrentCtx) {
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+case class Ctx0(id: String) extends Ctx
+class CtxFactory0 extends CtxFactory {
+    val count = new AtomicInteger(0)
+
+    def newCtx(name: String)(implicit parent: Option[Ctx] = None): Ctx = {
+        new Ctx0(parent.map(_ + "/").getOrElse("") + name + "[" + count.addAndGet(1) + "]")
+    }
+
+    def startCtx(ctx: Ctx): Ctx = {
+        ctx
+    }
+
+    def finishCtx(ctx: Ctx): Ctx = {
+        ctx
+    }
+}
+        //----------------------------------------------------------------------------------------------------------------------
 // Fake Application Fragment
 
 class FakeService(ctxTools: CtxTools, pcol: PropagationCollector) {

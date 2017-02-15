@@ -1,8 +1,5 @@
 package context
 
-import context.propagation.threadlocal.CurrentCtxLocalThread
-import org.slf4j.MDC
-
 object CurrentCtx extends CurrentCtx {
     var instance: CurrentCtx = CurrentCtxNoop.instance
 
