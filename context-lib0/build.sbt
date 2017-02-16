@@ -23,16 +23,28 @@ lazy val root = Project("context-lib0", file("."))
       ) ++
       providedScope(
           aspectJ,
+          "com.google.inject" % "guice" % "4.0",
           //"com.typesafe" % "config" % "1.2.1"
           "com.typesafe.akka" %% "akka-actor" % akkaVersion,
           "com.typesafe.play" %% "play" % play24Version,
           "com.typesafe.play" %% "play-ws" % play24Version
       ) ++
-      testScope(playTest24,
-          "io.zipkin.brave" % "brave-mysql" % braveVersion,
-          "io.zipkin.brave" % "brave-okhttp" % braveVersion,
-          "io.zipkin.brave" % "brave-p6spy" % braveVersion,
+      testScope(
+          playTest24,
+
+          // Hawkular
+          "org.hawkular.apm" % "hawkular-apm-client-opentracing" % "0.13.0.Final",
+          "org.hawkular.apm" % "hawkular-apm-trace-publisher-rest-client" % "0.13.0.Final",
+
+          // Brave / Zipkin
+          //"io.zipkin.brave" % "brave-mysql" % braveVersion,
+          //"io.zipkin.brave" % "brave-okhttp" % braveVersion,
+          //"io.zipkin.brave" % "brave-p6spy" % braveVersion,
+          "io.zipkin.reporter" % "zipkin-sender-okhttp3" % "0.6.12",
+          "io.zipkin.brave" % "brave" % "4.0.6",
           "io.opentracing.brave" % "brave-opentracing" % "0.18.1",
+
+          // OpenTracing default Impl / Noop
           "io.opentracing" % "opentracing-noop" % opentracingVersion,
           "io.opentracing" % "opentracing-impl" % opentracingVersion
       ))
