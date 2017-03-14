@@ -1,6 +1,6 @@
 val play24Version     = "2.4.8"
 val braveVersion      = "4.0.6"
-val opentracingVersion = "0.20.7"
+val opentracingVersion = "0.20.10"
 val akkaVersion        = "2.4.16"
 
 //play 2.4.x
@@ -19,7 +19,8 @@ lazy val root = Project("context-lib0", file("."))
     libraryDependencies ++=
       compileScope(
           "javax.inject" % "javax.inject" % "1",
-          "io.opentracing" % "opentracing-api" % opentracingVersion
+          "io.opentracing" % "opentracing-api" % opentracingVersion,
+          "com.fasterxml.jackson.core" % "jackson-core" % "2.6.0"
       ) ++
       providedScope(
           aspectJ,
